@@ -1,0 +1,42 @@
+---
+title: "K-Means Clustering"
+author: "Mr. Gulati"
+date: "July 24, 2020"
+output: html_document
+---
+Reading the data
+
+```{r}
+dataset <- read.csv("D:/Internship/Task 2/Iris.csv",sep = ",", header = TRUE)
+dataset_df <- data.frame(dataset)
+dataset_df <- na.omit(dataset_df)
+head(dataset_df)
+```
+Finding optimum number of clusters
+
+```{r}
+set.seed(100)
+
+fviz_nbclust(dataset_df[,c(1,2,3,4)], kmeans, method = "wss")
+```
+The results suggests the bend appears at k=3
+
+Applying kmeans
+```{r}
+model <- kmeans(dataset_df[,c(1,2,3,4)], 3, nstart = 25)
+model
+```
+
+Visualising Clusters
+
+```{r}
+iris_clustered <- data.frame(dataset_df, cluster=factor(model$cluster))
+
+centroids <- data.frame(model$centers, cluster=factor(1:3))
+library(ggplot2)
+ggplot(iris_clustered, aes(x=SepalLengthCm, y=SepalWidthCm, color=cluster, shape=Species)) + geom_point(aes(shape=Species)) +
+  # individual points from the `iris_clustered` data frame
+  geom_point(data=centroids, aes(fill=cluster), shape=21, color="black", size=3, stroke=1) # centroids
+
+```
+
